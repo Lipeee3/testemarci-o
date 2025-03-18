@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cardápio Eventos - Microsoft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/imask"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#107C10",
+              secondary: "#E6F1E6",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      .tab-active {
+        background-color: #107c10;
+        color: white;
+      }
+      .modal {
+        display: none;
+      }
+      .modal.active {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body class="bg-white min-h-screen">
+    <nav class="fixed top-0 w-full bg-white shadow-sm z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <span class="text-primary text-2xl font-['Pacifico']"
+              >Cardápio Eventos</span
+            >
+          </div>
+          <div class="flex items-center space-x-4">
+            <button
+              id="loginBtn"
+              class="text-gray-600 hover:text-primary cursor-pointer"
+              onclick="toggleModal('loginModal')"
+            >
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="ri-user-line"></i>
+              </div>
+            </button>
+            <button
+              id="cartBtn"
+              class="text-gray-600 hover:text-primary cursor-pointer"
+              onclick="toggleModal('cartModal')"
+            >
+              <div class="w-6 h-6 flex items-center justify-center relative">
+                <i class="ri-shopping-cart-line"></i>
+                <span
+                  id="cartCount"
+                  class="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center hidden"
+                  >0</span
+                >
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="pt-20 pb-16 px-4 max-w-7xl mx-auto">
+      <div class="mb-8">
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Pesquisar eventos..."
+            class="w-full px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-primary"
+          />
+          <div
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center"
+          >
+            <i class="ri-search-line text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+      <!-- Seção de Eventos -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Eventos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Card de Coffee Break -->
+          <div
+            class="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+          >
+            <img
+              src="https://public.readdy.ai/ai/img_res/db664c6aebb158cca366e3da42aa121f.jpg"
+              class="w-full h-48 object-cover"
+              alt="Formatura"
+            />
+            <div class="p-4">
+              <h3 class="text-lg font-semibold mb-2">Coffee Break</h3>
+              <p class="text-sm text-gray-600 mb-2">
+                Todas nossas opções Coffee Breaks em um único lugar!
+              </p>
+              <button
+                onclick="showMenu(this)"
+                class="w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors"
+              >
+                Ver Cardápio
+              </button>
+            </div>
+          </div>
+
+      </section>
+
+      <!-- Seção de Casamentos -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Casamentos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Card de Casamento -->
+          <div
+            class="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+          >
+            <img
+              src="https://public.readdy.ai/ai/img_res/2d7fb412fd9f5d4e1eb6169773836ba9.jpg"
+              onclick="showEventDetails(this)"
+              class="w-full h-48 object-cover cursor-pointer"
+              alt="Casamento"
+            />
+            <div class="p-4">
+              <h3 class="text-lg font-semibold mb-2">Casamentos</h3>
+              <p class="text-sm text-gray-600 mb-2">Faça seu orçamento!</p>
+              <button
+                onclick="showMenu(this)"
+                class="w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors"
+              >
+                Ver Propósta
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script>
+        function showEventDetails(img) {
+          const eventModal = document.createElement("div");
+
+          eventModal.className =
+            "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+
+          eventModal.innerHTML = `
+
+<div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+
+<div class="flex justify-between items-center mb-6">
+
+<h2 class="text-2xl font-semibold text-gray-800">Casamentos</h2>
+
+<button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-gray-600">
+
+<div class="w-6 h-6 flex items-center justify-center">
+
+<i class="ri-close-line"></i>
+
+</div>
+
+</button>
+
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+<div>
+
+<div class="space-y-4">
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-2">Data e Horário</h3>
+
+<p class="text-gray-600">Data • Horário - a combinar</p>
+
+</div>
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-2">Local</h3>
+
+<p class="text-gray-600">Villa Verde</p>
+
+<p class="text-gray-600">Rua das Flores, 1000 - Jardins</p>
+
+<p class="text-gray-600">São Paulo - SP</p>
+
+</div>
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-2">Capacidade</h3>
+
+<p class="text-gray-600">Mínimo: 100 convidados</p>
+
+<p class="text-gray-600">Máximo: 1000 convidados</p>
+
+</div>
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-2">Estrutura</h3>
+
+<ul class="text-gray-600 space-y-1">
+
+<li>• Salão principal climatizado</li>
+
+<li>• Área externa para cerimônia</li>
+
+<li>• Jardim para fotos</li>
+
+<li>• Estacionamento com manobrista</li>
+
+<li>• Gerador próprio</li>
+
+<li>• Cozinha industrial completa</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="space-y-6">
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestões de Decorações</h3>
+
+<div class="grid grid-cols-2 gap-4">
+
+<img src="https://public.readdy.ai/ai/img_res/58d6c9f211a2f9a36298b7915c36b126.jpg" class="w-full h-32 object-cover rounded-lg" alt="Salão">
+
+<img src="https://public.readdy.ai/ai/img_res/56aa646c0324a2dd443e772ce1d10eb2.jpg" class="w-full h-32 object-cover rounded-lg" alt="Cerimônia">
+
+<img src="https://public.readdy.ai/ai/img_res/d93dc762630a4ccf479e27acba12dbd1.jpg" class="w-full h-32 object-cover rounded-lg" alt="Jardim">
+
+<img src="https://public.readdy.ai/ai/img_res/ceb322565e0922a226caa43e2526f4a1.jpg" class="w-full h-32 object-cover rounded-lg" alt="Decoração">
+
+</div>
+
+</div>
+
+<div>
+
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestão de Decoração</h3>
+
+<div class="space-y-3">
+
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+
+<h4 class="font-medium text-gray-800 mb-2">Clássico Romântico</h4>
+
+<p class="text-sm text-gray-600">Decoração em tons de branco e verde com flores naturais, velas e cristais</p>
+
+</div>
+
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+
+<h4 class="font-medium text-gray-800 mb-2">Moderno Elegante</h4>
+
+<p class="text-sm text-gray-600">Design minimalista com arranjos modernos e iluminação especial</p>
+
+</div>
+
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+
+<h4 class="font-medium text-gray-800 mb-2">Luxo Total</h4>
+
+<p class="text-sm text-gray-600">Decoração premium com flores importadas e móveis especiais</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mt-8 flex justify-end">
+
+<button onclick="showMenu(this)" class="bg-primary text-white px-8 py-3 rounded-button hover:bg-opacity-90 transition-colors font-medium whitespace-nowrap">
+
+Fale com um de Nossos Consultores
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+          document.body.appendChild(eventModal);
+
+          eventModal.addEventListener("click", (e) => {
+            if (e.target === eventModal) {
+              eventModal.remove();
+            }
+          });
+        }
+      </script>
+    </main>
+
+    <div
+      id="loginModal"
+      class="modal fixed inset-0 bg-black bg-opacity-50 flex hidden items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative">
+        <button
+          onclick="toggleModal('loginModal')"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-close-line"></i>
+          </div>
+        </button>
+        <h2 class="text-2xl font-semibold mb-6 text-center">Entrar</h2>
+        <form class="space-y-4" onsubmit="handleLogin(event)">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Email</label
+            >
+            <input
+              type="email"
+              id="loginEmail"
+              class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Senha</label
+            >
+            <div class="relative">
+              <input
+                type="password"
+                id="loginPassword"
+                class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary"
+                required
+              />
+              <button
+                type="button"
+                onclick="togglePasswordVisibility()"
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-eye-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                class="h-4 w-4 text-primary border-gray-300 rounded"
+              />
+              <label for="rememberMe" class="ml-2 block text-sm text-gray-700"
+                >Lembrar-me</label
+              >
+            </div>
+            <a
+              href="#"
+              class="text-sm text-primary hover:underline"
+              onclick="showForgotPasswordModal()"
+              >Esqueceu a senha?</a
+            >
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors"
+          >
+            Entrar
+          </button>
+        </form>
+        <div class="mt-6 relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Ou continue com</span>
+          </div>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-3">
+          <button
+            type="button"
+            onclick="socialLogin('google')"
+            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-button bg-white hover:bg-gray-50"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-google-fill text-[#EA4335]"></i>
+            </div>
+          </button>
+          <button
+            type="button"
+            onclick="socialLogin('facebook')"
+            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-button bg-white hover:bg-gray-50"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-facebook-fill text-[#1877F2]"></i>
+            </div>
+          </button>
+          <button
+            type="button"
+            onclick="socialLogin('apple')"
+            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-button bg-white hover:bg-gray-50"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-apple-fill"></i>
+            </div>
+          </button>
+        </div>
+        <p class="mt-6 text-center text-sm text-gray-600">
+          Não tem uma conta?
+          <a
+            href="#"
+            class="font-medium text-primary hover:underline"
+            onclick="showSignupModal()"
+          >
+            Criar conta
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      id="cartModal"
+      class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-lg p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">Carrinho</h2>
+          <button
+            class="text-gray-400 hover:text-gray-600"
+            onclick="toggleModal('cartModal')"
+          >
+            <div class="w-6 h-6 flex items-center justify-center">
+              <i class="ri-close-line"></i>
+            </div>
+          </button>
+        </div>
+        <div id="emptyCart" class="text-center py-8">
+          <div class="w-16 h-16 mx-auto mb-4 text-gray-300">
+            <i class="ri-shopping-cart-line text-5xl"></i>
+          </div>
+          <p class="text-gray-500">Seu carrinho está vazio</p>
+          <button
+            onclick="toggleModal('cartModal')"
+            class="mt-4 text-primary hover:underline"
+          >
+            Continuar comprando
+          </button>
+        </div>
+        <div class="space-y-4 hidden" id="cartItems"></div>
+        <div class="mt-6 border-t pt-4 hidden" id="cartFooter">
+          <div
+            class="flex justify-between items-center text-lg font-semibold mb-4"
+          >
+            <span>Total</span>
+            <span id="cartTotalAmount">R$ 0,00</span>
+          </div>
+          <div class="flex space-x-3">
+            <button
+              onclick="toggleModal('cartModal')"
+              class="flex-1 border border-primary text-primary py-2 px-4 rounded-button hover:bg-primary hover:text-white transition-colors"
+            >
+              Continuar Comprando
+            </button>
+            <button
+              onclick="proceedToCheckout()"
+              class="flex-1 bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors"
+            >
+              Finalizar Pedido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="checkoutModal"
+      class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">Checkout</h2>
+          <button
+            onclick="toggleModal('checkoutModal')"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <div class="w-6 h-6 flex items-center justify-center">
+              <i class="ri-close-line"></i>
+            </div>
+          </button>
+        </div>
+        <div class="space-y-6">
+          <div class="border-b pb-6">
+            <h3 class="text-lg font-semibold mb-4">Resumo do Pedido</h3>
+            <div id="checkoutItems" class="space-y-4"></div>
+            <div class="flex justify-between items-center mt-4 font-semibold">
+              <span>Total</span>
+              <span id="checkoutTotal">R$ 0,00</span>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold">Forma de Pagamento</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onclick="selectPaymentMethod('pix')"
+                class="flex items-center justify-center space-x-3 p-4 border rounded-lg hover:border-primary transition-colors payment-method"
+              >
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <i class="ri-qr-code-line"></i>
+                </div>
+                <span>PIX</span>
+              </button>
+              <button
+                onclick="selectPaymentMethod('credit')"
+                class="flex items-center justify-center space-x-3 p-4 border rounded-lg hover:border-primary transition-colors payment-method"
+              >
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <i class="ri-bank-card-line"></i>
+                </div>
+                <span>Cartão de Crédito</span>
+              </button>
+              <button
+                onclick="selectPaymentMethod('boleto')"
+                class="flex items-center justify-center space-x-3 p-4 border rounded-lg hover:border-primary transition-colors payment-method"
+              >
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <i class="ri-bill-line"></i>
+                </div>
+                <span>Boleto Bancário</span>
+              </button>
+              <button
+                onclick="selectPaymentMethod('transfer')"
+                class="flex items-center justify-center space-x-3 p-4 border rounded-lg hover:border-primary transition-colors payment-method"
+              >
+                <div class="w-6 h-6 flex items-center justify-center">
+                  <i class="ri-bank-line"></i>
+                </div>
+                <span>Transferência Bancária</span>
+              </button>
+            </div>
+          </div>
+          <div id="paymentDetails" class="hidden space-y-4"></div>
+          <button
+            onclick="confirmPayment()"
+            class="w-full bg-primary text-white py-3 px-4 rounded-button hover:bg-opacity-90 transition-colors mt-6"
+          >
+            Confirmar Pagamento
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Função para incrementar a quantidade
+      function incrementQuantity(index) {
+        const input = document.querySelector(
+          `.item-quantity[data-index="${index}"]`
+        );
+        let value = parseInt(input.value) || 0;
+        input.value = value + 1;
+        updateMenuTotal(); // Atualiza o total do menu ao alterar a quantidade
+      }
+
+      // Função para decrementar a quantidade
+      function decrementQuantity(index) {
+        const input = document.querySelector(
+          `.item-quantity[data-index="${index}"]`
+        );
+        let value = parseInt(input.value) || 0;
+        if (value > 0) {
+          input.value = value - 1;
+          updateMenuTotal(); // Atualiza o total do menu ao alterar a quantidade
+        }
+      }
+      // Função para abrir o modal de quantidade
+      function showQuantityModal(eventTitle, menuType, pricePerPerson) {
+        document.getElementById(
+          "quantityModalTitle"
+        ).textContent = `${eventTitle} - ${menuType}`;
+        toggleModal("quantityModal");
+      }
+
+      // Função para ajustar a quantidade de pessoas
+      function adjustPersonCount(change) {
+        const personCount = document.getElementById("personCount");
+        let newValue = parseInt(personCount.value) + change;
+        if (newValue < 10) newValue = 10;
+        personCount.value = newValue;
+        updateMenuTotal();
+      }
+
+      // Função para ajustar a quantidade de itens
+      function adjustItemQuantity(item, change) {
+        const quantityInput = document.getElementById(`${item}Quantity`);
+        let newValue = parseInt(quantityInput.value) + change;
+        if (newValue < 0) newValue = 0;
+        quantityInput.value = newValue;
+        updateMenuTotal();
+      }
+
+      // Função para atualizar o total no modal
+      function updateMenuTotal() {
+        const personCount = parseInt(
+          document.getElementById("personCount").value
+        );
+        const cafeQuantity = parseInt(
+          document.getElementById("cafeQuantity").value
+        );
+        const chasQuantity = parseInt(
+          document.getElementById("chasQuantity").value
+        );
+        const aguaQuantity = parseInt(
+          document.getElementById("aguaQuantity").value
+        );
+
+        const total =
+          (cafeQuantity * 0 + chasQuantity * 0 + aguaQuantity * 3) *
+          personCount;
+        document.getElementById("menuTotal").textContent = `R$ ${total.toFixed(
+          2
+        )}`;
+      }
+
+      // Função para confirmar a adição ao carrinho
+      function confirmAddToCart() {
+        const personCount = parseInt(
+          document.getElementById("personCount").value
+        );
+        const cafeQuantity = parseInt(
+          document.getElementById("cafeQuantity").value
+        );
+        const chasQuantity = parseInt(
+          document.getElementById("chasQuantity").value
+        );
+        const aguaQuantity = parseInt(
+          document.getElementById("aguaQuantity").value
+        );
+
+        const eventTitle =
+          document.getElementById("quantityModalTitle").textContent;
+        const menuType = "Coffee Break Básico"; // Exemplo
+        const pricePerPerson = 44; // Exemplo
+
+        addToCart(
+          eventTitle,
+          menuType,
+          pricePerPerson,
+          personCount,
+          cafeQuantity,
+          chasQuantity,
+          aguaQuantity
+        );
+        toggleModal("quantityModal");
+      }
+      const eventTitle =
+        document.getElementById("quantityModalTitle").textContent;
+      const menuType = "Almoço Buffet Standard"; // Exemplo
+      const pricePerPerson = 4; // Exemplo
+
+      addToCart(
+        eventTitle,
+        menuType,
+        pricePerPerson,
+        personCount,
+        cafeQuantity,
+        chasQuantity,
+        aguaQuantity
+      );
+      toggleModal("quantityModal");
+
+      // Função para adicionar itens ao carrinho
+      function addToCart(
+        eventTitle,
+        menuType,
+        pricePerPerson,
+        quantity,
+        cafeQuantity,
+        chasQuantity,
+        aguaQuantity
+      ) {
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        const newItem = {
+          eventTitle: eventTitle,
+          menuType: menuType,
+          pricePerPerson: pricePerPerson,
+          quantity: quantity,
+          cafeQuantity: cafeQuantity,
+          chasQuantity: chasQuantity,
+          aguaQuantity: aguaQuantity,
+        };
+        cartItems.push(newItem);
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        updateCartUI();
+      }
+
+      // Função para atualizar a interface do carrinho
+      function updateCartUI() {
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        const cartItemsContainer = document.getElementById("cartItems");
+        const cartCount = document.getElementById("cartCount");
+        const emptyCart = document.getElementById("emptyCart");
+        const cartFooter = document.getElementById("cartFooter");
+
+        cartItemsContainer.innerHTML = "";
+
+        if (cartItems.length === 0) {
+          emptyCart.classList.remove("hidden");
+          cartFooter.classList.add("hidden");
+          cartCount.classList.add("hidden");
+        } else {
+          emptyCart.classList.add("hidden");
+          cartFooter.classList.remove("hidden");
+          cartCount.classList.remove("hidden");
+
+          let total = 0;
+          cartItems.forEach((item, index) => {
+            const itemElement = document.createElement("div");
+            itemElement.className = "cart-item";
+            itemElement.innerHTML = `
+              <div class="flex justify-between items-center">
+                <span>${item.eventTitle} - ${item.menuType}</span>
+                <span>R$ ${(item.pricePerPerson * item.quantity).toFixed(
+                  2
+                )}</span>
+                <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700">
+                  Remover
+                </button>
+              </div>
+            `;
+            cartItemsContainer.appendChild(itemElement);
+            total += item.pricePerPerson * item.quantity;
+          });
+
+          cartCount.textContent = cartItems.length;
+          document.getElementById(
+            "cartTotalAmount"
+          ).textContent = `R$ ${total.toFixed(2)}`;
+        }
+      }
+
+      // Função para remover itens do carrinho
+      function removeFromCart(index) {
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        cartItems.splice(index, 1);
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        updateCartUI();
+      }
+
+      // Função para alternar a visibilidade do modal
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.toggle("active");
+        }
+      }
+
+      // Função para finalizar o pedido
+      function proceedToCheckout() {
+        alert("Pedido finalizado com sucesso!");
+        localStorage.removeItem("cartItems");
+        updateCartUI();
+        toggleModal("cartModal");
+      }
+
+      // Atualiza o carrinho ao carregar a página
+      window.addEventListener("load", () => {
+        updateCartUI();
+      });
+
+      function showSignupModal() {
+        toggleModal("loginModal");
+        const signupModal = document.createElement("div");
+        signupModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        signupModal.innerHTML = `
+<div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+<h2 class="text-2xl font-semibold mb-6 text-center">Criar Conta</h2>
+<form id="signupForm" class="space-y-4" onsubmit="handleSignup(event)">
+<div class="flex space-x-4 mb-4">
+<button type="button" onclick="toggleAccountType('personal')" class="flex-1 py-2 px-4 rounded-button border text-center account-type active" data-type="personal">Pessoa Física</button>
+<button type="button" onclick="toggleAccountType('business')" class="flex-1 py-2 px-4 rounded-button border text-center account-type" data-type="business">Pessoa Jurídica</button>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+<input type="text" id="fullName" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" required>
+</div>
+<div id="businessFields" class="hidden">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Razão Social</label>
+<input type="text" id="companyName" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+<input type="text" id="cnpj" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" placeholder="00.000.000/0000-00">
+</div>
+</div>
+<div id="personalFields">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+<input type="text" id="cpf" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" placeholder="000.000.000-00" required>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+<input type="text" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" placeholder="(00) 00000-0000" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<input type="email" id="signupEmail" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+<div class="relative">
+<input type="password" id="signupPassword" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$">
+<button type="button" onclick="toggleSignupPasswordVisibility('signupPassword')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-eye-line"></i>
+</div>
+</button>
+</div>
+<p class="text-xs text-gray-500 mt-1">Mínimo 8 caracteres, incluindo números e caracteres especiais</p>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+<div class="relative">
+<input type="password" id="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" required>
+<button type="button" onclick="toggleSignupPasswordVisibility('confirmPassword')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-eye-line"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="flex items-start mt-4">
+<input type="checkbox" id="termsAccept" class="mt-1" required>
+<label for="termsAccept" class="ml-2 text-sm text-gray-600">
+Li e aceito os <a href="#" class="text-primary hover:underline" onclick="showTerms()">Termos de Uso</a> e a <a href="#" class="text-primary hover:underline" onclick="showPrivacyPolicy()">Política de Privacidade</a>
+</label>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Criar conta</button>
+</form>
+<div class="mt-4 text-center">
+<p class="text-sm text-gray-600">
+Já tem uma conta? <a href="#" class="text-primary hover:underline" onclick="toggleSignupLogin()">Fazer login</a>
+</p>
+</div>
+<button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="this.closest('.modal').remove()">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+`;
+        document.body.appendChild(signupModal);
+        signupModal.addEventListener("click", (e) => {
+          if (e.target === signupModal) {
+            signupModal.remove();
+          }
+        });
+      }
+      function toggleAccountType(type) {
+        document.querySelectorAll(".account-type").forEach((btn) => {
+          btn.classList.remove("active", "bg-primary", "text-white");
+          btn.classList.add("border-gray-300", "text-gray-700");
+        });
+
+        const selectedBtn = document.querySelector(`[data-type="${type}"]`);
+        selectedBtn.classList.add("active", "bg-primary", "text-white");
+        selectedBtn.classList.remove("border-gray-300", "text-gray-700");
+
+        if (type === "business") {
+          document.getElementById("businessFields").classList.remove("hidden");
+          document.getElementById("personalFields").classList.add("hidden");
+          document.getElementById("cpf").removeAttribute("required");
+          document.getElementById("cnpj").setAttribute("required", "");
+        } else {
+          document.getElementById("businessFields").classList.add("hidden");
+          document.getElementById("personalFields").classList.remove("hidden");
+          document.getElementById("cpf").setAttribute("required", "");
+          document.getElementById("cnpj").removeAttribute("required");
+        }
+      }
+
+      function showTerms() {
+        const termsModal = document.createElement("div");
+        termsModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        termsModal.innerHTML = `
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <h3 class="text-xl font-semibold mb-4">Termos de Uso</h3>
+      <div class="prose prose-sm">
+        <p>1. Aceitação dos Termos</p>
+        <p class="text-gray-600 mb-4">Ao acessar e usar este serviço, você aceita e concorda em cumprir estes termos e condições de uso.</p>
+        
+        <p>2. Uso do Serviço</p>
+        <p class="text-gray-600 mb-4">O serviço deve ser usado apenas para fins legais e de acordo com estes termos.</p>
+        
+        <p>3. Conta do Usuário</p>
+        <p class="text-gray-600 mb-4">Você é responsável por manter a confidencialidade de sua conta e senha.</p>
+        
+        <p>4. Modificações do Serviço</p>
+        <p class="text-gray-600 mb-4">Reservamos o direito de modificar ou descontinuar o serviço a qualquer momento.</p>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button onclick="this.closest('.modal').remove()" class="bg-primary text-white px-6 py-2 rounded-button hover:bg-opacity-90">Fechar</button>
+      </div>
+    </div>
+  `;
+        document.body.appendChild(termsModal);
+      }
+
+      function showPrivacyPolicy() {
+        const privacyModal = document.createElement("div");
+        privacyModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        privacyModal.innerHTML = `
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <h3 class="text-xl font-semibold mb-4">Política de Privacidade</h3>
+      <div class="prose prose-sm">
+        <p>1. Coleta de Informações</p>
+        <p class="text-gray-600 mb-4">Coletamos informações que você nos fornece diretamente ao criar uma conta ou usar nossos serviços.</p>
+        
+        <p>2. Uso das Informações</p>
+        <p class="text-gray-600 mb-4">Usamos suas informações para fornecer e melhorar nossos serviços, processar suas transações e comunicar-nos com você.</p>
+        
+        <p>3. Proteção de Dados</p>
+        <p class="text-gray-600 mb-4">Implementamos medidas de segurança para proteger suas informações pessoais.</p>
+        
+        <p>4. Compartilhamento de Dados</p>
+        <p class="text-gray-600 mb-4">Não vendemos ou compartilhamos suas informações pessoais com terceiros, exceto conforme descrito nesta política.</p>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button onclick="this.closest('.modal').remove()" class="bg-primary text-white px-6 py-2 rounded-button hover:bg-opacity-90">Fechar</button>
+      </div>
+    </div>
+  `;
+        document.body.appendChild(privacyModal);
+      }
+
+      function handleSignup(event) {
+        event.preventDefault();
+
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+        const phone = document.getElementById("phone").value;
+        const isBusinessAccount =
+          document.querySelector(".account-type.active").dataset.type ===
+          "business";
+
+        // Validate password
+        const passwordRegex =
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+          showNotification(
+            "error",
+            "A senha deve ter no mínimo 8 caracteres, incluindo números e caracteres especiais"
+          );
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showNotification("error", "As senhas não coincidem");
+          return;
+        }
+
+        // Validate phone
+        const phoneRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+        if (!phoneRegex.test(phone)) {
+          showNotification("error", "Formato de telefone inválido");
+          return;
+        }
+
+        // Validate document number
+        if (isBusinessAccount) {
+          const cnpj = document.getElementById("cnpj").value;
+          const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+          if (!cnpjRegex.test(cnpj)) {
+            showNotification("error", "CNPJ inválido");
+            return;
+          }
+        } else {
+          const cpf = document.getElementById("cpf").value;
+          const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+          if (!cpfRegex.test(cpf)) {
+            showNotification("error", "CPF inválido");
+            return;
+          }
+        }
+
+        // Mock signup success
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("userName", fullName);
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem(
+          "accountType",
+          isBusinessAccount ? "business" : "personal"
+        );
+
+        const successModal = document.createElement("div");
+        successModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        successModal.innerHTML = `
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="ri-check-line text-4xl text-green-500"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Cadastro Realizado!</h3>
+        <p class="text-gray-600 mb-6">Sua conta foi criada com sucesso.</p>
+        <button onclick="finishSignup()" class="bg-primary text-white px-6 py-2 rounded-button hover:bg-opacity-90">
+          Continuar
+        </button>
+      </div>
+    </div>
+  `;
+        document.body.appendChild(successModal);
+      }
+
+      // Add input masks
+      document.addEventListener("DOMContentLoaded", function () {
+        const phoneMask = IMask(document.getElementById("phone"), {
+          mask: "(00) 00000-0000",
+        });
+
+        const cpfMask = IMask(document.getElementById("cpf"), {
+          mask: "000.000.000-00",
+        });
+
+        const cnpjMask = IMask(document.getElementById("cnpj"), {
+          mask: "00.000.000/0000-00",
+        });
+      });
+      function finishSignup() {
+        document.querySelectorAll(".modal").forEach((modal) => modal.remove());
+        updateLoginState(true);
+        showNotification("success", "Bem-vindo!");
+      }
+      function toggleSignupPasswordVisibility(inputId) {
+        const passwordInput = document.getElementById(inputId);
+        const button = event.currentTarget;
+        const icon = button.querySelector("i");
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          icon.className = "ri-eye-off-line";
+        } else {
+          passwordInput.type = "password";
+          icon.className = "ri-eye-line";
+        }
+      }
+      function toggleSignupLogin() {
+        document.querySelector(".modal:last-child").remove();
+        toggleModal("loginModal");
+      }
+      function showForgotPasswordModal() {
+        toggleModal("loginModal");
+        const forgotPasswordModal = document.createElement("div");
+        forgotPasswordModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        forgotPasswordModal.innerHTML = `
+<div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+<h2 class="text-2xl font-semibold mb-6 text-center">Recuperar Senha</h2>
+<form class="space-y-4" onsubmit="handleForgotPassword(event)">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" required>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Enviar link de recuperação</button>
+</form>
+<div class="mt-4 text-center">
+<a href="#" class="text-sm text-primary hover:underline" onclick="toggleForgotPasswordLogin()">Voltar para o login</a>
+</div>
+<button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="this.closest('.modal').remove()">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+`;
+        document.body.appendChild(forgotPasswordModal);
+        forgotPasswordModal.addEventListener("click", (e) => {
+          if (e.target === forgotPasswordModal) {
+            forgotPasswordModal.remove();
+          }
+        });
+      }
+      function toggleForgotPasswordLogin() {
+        document.querySelector(".modal:last-child").remove();
+        toggleModal("loginModal");
+      }
+      function handleForgotPassword(event) {
+        event.preventDefault();
+        const email = event.target.querySelector('input[type="email"]').value;
+        const successModal = document.createElement("div");
+        successModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        successModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+<h3 class="text-lg font-semibold mb-4 text-primary">Email Enviado</h3>
+<p class="text-gray-600">Um link para recuperação de senha foi enviado para ${email}</p>
+<div class="flex justify-end mt-4">
+<button onclick="handleSuccessModalClose()" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-opacity-90">OK</button>
+</div>
+</div>
+`;
+        document.body.appendChild(successModal);
+      }
+      function handleSuccessModalClose() {
+        document.querySelectorAll(".modal").forEach((modal) => modal.remove());
+        toggleModal("loginModal");
+      }
+      function handleLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const rememberMe = document.getElementById("rememberMe").checked;
+        if (!email || !password) {
+          showNotification("error", "Por favor, preencha todos os campos");
+          return;
+        }
+        // Mock login validation
+        if (email === "admin@example.com" && password === "password123") {
+          if (rememberMe) {
+            localStorage.setItem("userEmail", email);
+            localStorage.setItem("isLoggedIn", "true");
+          }
+          showNotification("success", "Login realizado com sucesso!");
+          setTimeout(() => {
+            toggleModal("loginModal");
+            updateLoginState(true);
+          }, 1500);
+        } else {
+          showNotification("error", "Email ou senha incorretos");
+        }
+      }
+      function showNotification(type, message) {
+        const notification = document.createElement("div");
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-x-full`;
+        notification.style.maxWidth = "24rem";
+        if (type === "success") {
+          notification.className += " bg-green-50 border border-green-200";
+          notification.innerHTML = `
+<div class="flex items-center">
+<div class="flex-shrink-0">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100">
+<i class="ri-check-line text-xl text-green-500"></i>
+</div>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-green-800">${message}</p>
+</div>
+<div class="ml-auto pl-3">
+<button class="inline-flex text-green-400 hover:text-green-500" onclick="this.closest('div[class*=fixed]').remove()">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+</div>
+`;
+        } else {
+          notification.className += " bg-red-50 border border-red-200";
+          notification.innerHTML = `
+<div class="flex items-center">
+<div class="flex-shrink-0">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-red-100">
+<i class="ri-error-warning-line text-xl text-red-500"></i>
+</div>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-red-800">${message}</p>
+</div>
+<div class="ml-auto pl-3">
+<button class="inline-flex text-red-400 hover:text-red-500" onclick="this.closest('div[class*=fixed]').remove()">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+</div>
+`;
+        }
+        document.body.appendChild(notification);
+        requestAnimationFrame(() => {
+          notification.classList.remove("translate-x-full");
+        });
+        setTimeout(() => {
+          notification.classList.add("translate-x-full");
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+      function togglePasswordVisibility(inputId) {
+        const passwordInput = document.getElementById(inputId);
+        const button = event.currentTarget;
+        const icon = button.querySelector("i");
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          icon.className = "ri-eye-off-line";
+        } else {
+          passwordInput.type = "password";
+          icon.className = "ri-eye-line";
+        }
+      }
+      function socialLogin(provider) {
+        const providers = {
+          google: {
+            name: "Google",
+            color: "#EA4335",
+          },
+          facebook: {
+            name: "Facebook",
+            color: "#1877F2",
+          },
+          apple: {
+            name: "Apple",
+            color: "#000000",
+          },
+        };
+        showNotification(
+          "success",
+          `Conectando com ${providers[provider].name}...`
+        );
+        setTimeout(() => {
+          toggleModal("loginModal");
+          updateLoginState(true);
+        }, 1500);
+      }
+      function updateLoginState(isLoggedIn) {
+        const loginBtn = document.getElementById("loginBtn");
+        if (isLoggedIn) {
+          loginBtn.innerHTML = `
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-user-fill text-primary"></i>
+</div>
+`;
+          loginBtn.onclick = showUserMenu;
+        } else {
+          loginBtn.innerHTML = `
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-user-line"></i>
+</div>
+`;
+          loginBtn.onclick = () => toggleModal("loginModal");
+        }
+      }
+      function showUserMenu() {
+        const userMenu = document.createElement("div");
+        userMenu.className =
+          "fixed top-20 right-4 w-48 rounded-lg bg-white shadow-lg py-1 z-50";
+        userMenu.innerHTML = `
+<div class="px-4 py-2 border-b">
+<p class="text-sm font-medium text-gray-900">admin@example.com</p>
+</div>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+<div class="flex items-center">
+<div class="w-4 h-4 mr-3 flex items-center justify-center">
+<i class="ri-user-settings-line"></i>
+</div>
+Configurações
+</div>
+</a>
+<a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+<div class="flex items-center">
+<div class="w-4 h-4 mr-3 flex items-center justify-center">
+<i class="ri-logout-box-line"></i>
+</div>
+Sair
+</div>
+</a>
+`;
+        document.body.appendChild(userMenu);
+        document.addEventListener("click", function closeUserMenu(e) {
+          if (
+            !userMenu.contains(e.target) &&
+            !event.currentTarget.contains(e.target)
+          ) {
+            userMenu.remove();
+            document.removeEventListener("click", closeUserMenu);
+          }
+        });
+      }
+      function logout() {
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("isLoggedIn");
+        updateLoginState(false);
+        showNotification("success", "Logout realizado com sucesso!");
+        document.querySelector(".fixed.top-20").remove();
+      }
+      // Check if user is already logged in
+      window.addEventListener("load", () => {
+        if (localStorage.getItem("isLoggedIn") === "true") {
+          updateLoginState(true);
+        }
+      });
+      function finishLogin() {
+        document.querySelectorAll(".modal").forEach((modal) => modal.remove());
+        const loginBtn = document.getElementById("loginBtn");
+        loginBtn.innerHTML = `
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-user-fill text-primary"></i>
+</div>
+`;
+      }
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.toggle("active");
+        }
+      }
+      function showMenu(button) {
+        const menuModal = document.createElement("div");
+        menuModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+
+        const eventTitle =
+          button.closest(".p-4")?.querySelector("h3")?.textContent ||
+          button.closest(".bg-white")?.querySelector("h2")?.textContent;
+
+        if (eventTitle.includes("Coffee Break")) {
+          menuModal.innerHTML = `
+<div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold">Cardápio - ${eventTitle}</h2>
+    <button class="text-gray-400 hover:text-gray-600" onclick="this.closest('.modal').remove()">
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-close-line"></i>
+      </div>
+    </button>
+  </div>
+  <div class="space-y-6">
+    <div>
+      <h3 class="text-lg font-semibold mb-3">Opções para Coffee Break</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 border rounded-lg">
+          <div class="flex justify-between items-start mb-2">
+            <span class="font-medium">Coffee Break Básico</span>
+            <span class="text-primary">R$ 44 por Pessoa</span>
+          </div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• Água</li>
+            <li>• Chás Variados</li>
+            <li>• Petit Four Rojo</li>
+          </ul>
+          <button onclick="addToCart('${eventTitle}', 'Coffee Break Básico', 44)" class="mt-3 w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Adicionar ao Carrinho</button>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <div class="flex justify-between items-start mb-2">
+            <span class="font-medium">Coffee Break Premium</span>
+            <span class="text-primary">R$ 116 por Pessoa</span>
+          </div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• Bebidas</li>
+            <li>• Snacks</li>
+            <li>• Mini-Sanduíches</li>
+            <li>• Bolos</li>
+            <li>• Sobremesas</li>
+          </ul>
+          <button onclick="addToCart('${eventTitle}', 'Coffee Break Premium', 116)" class="mt-3 w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Adicionar ao Carrinho</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+        } else if (eventTitle.includes("Almoço")) {
+          menuModal.innerHTML = `
+          <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-semibold text-gray-800">Sujestões do Chef</h2>
+<button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-gray-600">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+
+<div class="space-y-6">
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestões de Pratos</h3>
+
+<div class="grid grid-cols-2 gap-4">
+<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSExIVFRUTGBUVFxUYFhUXFRYVFRUWFxUWFhUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGhAQGyslICUtLS0tLS0tLy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAbAAABBQEBAAAAAAAAAAAAAAACAAMEBQYBB//EAD0QAAEDAwIEBAQEBAUDBQAAAAEAAhEDBCESMQVBUWEGcYGREyIyobHB0fAUQlJiI3KC4fEVM0MHkqLC0v/EABoBAAIDAQEAAAAAAAAAAAAAAAIDAAEEBQb/xAAtEQACAgEEAQMCBgIDAAAAAAAAAQIRAwQSITFRBRNBIqEyYXGB0fEUI2KR4f/aAAwDAQACEQMRAD8A8z4e3CsjsoVg3CmVCtHwKGqjkqSBycpBRFMlU1IphR6YUhiIEcCMIAjCsgQRBCETVCBLoSC6FZQQRhC0IgoUEAuhcBRBWUEES4EQVkEEYSATjWqEOBONKQajDFCHCxp3Cj1uF03clMaxONYoUZ6v4bB+lVl1wGo3YStw0JzB3VNIJSaPMn0HN3BQL0ivwym/kFTXvhkHLVW0NT8mSCMKddcHqM5KEWkbhVTQSkmII0AKKVRYSUri6rIFKSFJWQYsxgJyuUFtsgrvylsiRwlP0RKigqfZVA2TE4Uvjgr5HGubtIUlqzdV5LpIIyrThT56+qXjySfaH5cUIq4ss0QQhG1PMp1XnBaNMtJJz0Ttrw2iaRkjWY0+qh8W4bUtXhrgRqGpp5ELNOXuxcYumHLG0rG+JNAdhRgkJJ6lKE7HHbFJsEJqOmJIHVAApXD6TXVGhxgIpuotgrs1V3wi2ZbhzomJnvCybmjcbLQcfqUzTDGmS2FG8IUGvrhrxLeay4JOOPdJsbKKuinaU6wK08VUqLblwoiGwJA21c4+yrqYW1O0KYPEHmiAXc+iC1vmv23XOIWxq7uONgmrDhmh0ylRWS+eh8nicOFyWbQnAuAJwJ5mE1PNTacAUKDAXdKTUYUIcARhdARAKiAOotO4VfecCpv5K1hEoWYe/wDDTm5aqavZvZuCvUYUW4sGP3AVUglJo8yldBWv4h4ZBy1Zy74XUpnZVtCU0yJK4lnokqDAobI6QpnVrnbHmgaMJNODgZS2EiMFLoIXWL9HxNPyTBPTzR26tAyTT5JLaQPJP02AbJtgTzUYDCCdpASJ2TYRBU+iLs2NpQoPa1rXAOcRnmFF8bXL3VWU3PDhTaII79fZUVCqRkIXvLjJMlIxYXB3Y2cuKHbV7muBaMhHdVdbi4iJTLHEbLsp6jzYty4oILT8I4HTqtaAZe7odlnKAEiVtuA2cOa6mYdv2WXVSdpJtfoXBFZxHhZtG1A5szs498KLwPiDrcl+kGRCmeOeJValYU3wAwcszPM+yow4wBOE6OP6UnySUrYV1WNR7nndxlJrVxoXZT+kKZdN4Y0NBdueYVaQASByT9KvWcIa1zvQlKnwq4Ofgv8AZZsXuKb3vj4JXA2AjHLvhOCwqgw5hb5p11m9hBc0kbyASnvJG6vktR8jbqcYKIJqrWJccH2SbVRoF9jykWLNToUejDnBpMajC2vDeAUqQDiZP75JWWX0tI049LNxU3wmUV5bQIAKr2zscL0SnY03bBYX/wBQaDqAFRnI/ZK062Rq7NK0cMlqD5/MZCIKr4NxA1RkK0C0p2rOfKDi6Z2FyF2V0FWCcTVa1a8ZCeXVOiymf4fpk7LiuklVlUeRnZGxuELk80YSjSXHGG16VnTYWsbTqEZb9Tozn2VHbCVy9unPhpJIbsOQTthOoRuhXFkm7ZYOsqjSAWGXbIYIMHBC0lrdOoUjWNPUahAbqMhpG8dFn7iuaj3PIguMwErBkyTf1JV5TKnFLo41EEIRArUKCDkT5aYII80LBJA6kbb+i9ashZVbMfGYzDYOqNYgYzuChlLaHGNqzytpWh4La0qjIcB588KhNAtjMg7FaawtKekOmBGc7rNqpqWNbW1fTRcVT5Kzi1Cmx/8Ahnfl0XLW+qM2cUzdMbrdp+kc+yaZWYdnt906EUoqMnf6lVJu4oce4uJc4kk8yjaEICcCehZ0NnA5rWcF4RTYA6oJd35LM2P1tPQyts0ggELJqsjX0odhinyy/wCH1qe0AKyACx7ZGVZWd+dpWSOV9M0OHgs7zh7Xg7TykKLwSj8OaVSC6ZBjBB6JU6DfjCu5zpDSwCTpgmfp2nG6mU2fGLtTNGkwx0iTj6o5dFT5kpLsGqDfQYD9DfYKJf8AArarlzAD1GD7hTrW0LAQTPdVHEapEiYTfccVuYKinwVtz4RYwipTeflIOk5V6+mYCoqPEZdp1ZCtqdV79IBgDfugeps1OUvbUL4Rb2kALD+O7inVPwZnr2Wxa9wdBb8sb81X3vhO3qkvALHHMg8+42WjBlV8iN8oXt76PP7C0bTGFNAkTyXeJ2FS2qFjsj+V3JwTurSwAc1svqjHXkYXQEdCnqcB1KrPGfGadrUZTZkkSfy9d0M8ih2Nw6eeW9vwWUJLPWPiljsOELQW9ZrxLTKuM1LoHJhnDtBLiJJEKPJnswCCCOoRHZQ+Fn+4Z3E7jyU7Ss8JNrk2ZYqL4INUZU2xfpM+6iVd1KtQjqxDfJrba9pfw5Y55lwJDYnSegWfaFynJwOan2FmXicCDziCFmbhpk22x2PFPM6RElaXwb4dZel4dWDCzOnqOZRM4GwjLW8vp1bnYeauLHhVJo+VhBzkZ1CM5WPL6tiqknZpXp2RO20ZKrpoXLgwio2m8gHk4BbvitWzqWwd8oqOAI0fV5EKmq8NoUzJpAgie8Z5ThN3V3ZsgBmTkNBMn9EifrEJR2xi7D/wJRVykkiovo1BofLQJGNp5EK9tOF/EaDqYAdIMHE856KPRuaRz8IZx3/5Uq2ax7wzUGgnDSABPcjHusmX1RTpVJV4YmOnxSfGRfuZ/wARUms1spgPGxg/gsi2oxsBzHAjtlesVvDTAccz3x6Lg8KsJwJ8wtUfU8TSTjNtfp/Jpx6XJjVKUfv/AAZHh/w9I+G6oRAnWIM847KWFrD4VYGzG3QkKtfwPJA1Dp/wVuj6tgSW5Nft/FmWWgyybpp/uROFAa4PNXFtcGi7S7LTsVXU+FPBlrhg7HCuTR1MhwzzB3BQ5c2PN9eKVgexkxcTVFjSqg7LpxlUFGs+iYOW/grY1NbcHdIWRS4fYcS0tbhaCwqYWN4VRLJBMq/tbIVtOomGkOgEjI7hHjm7LkkXzj91mvEg055LTgKr8QWwfSKPVxk8UtvYqDpmOtKbNWoblXNCqQs7Qlhk8lZ29617i0bjdcXRah5VT7Rqao0dre8irSk+Qsxbvgq+sXLs4cjfDETjQN9YC4pllVsGTBG46EFee8Rs30KppvzzaeTm9V6isV48uGGpTYMvaCT2aYjPmCuhhk06M04/JR0zGVmPFnAnVz8QZIWmplHCe4p9gwyyh+Fnj9ajUpGHAhaLwlxN2sNnBWt4rwanWaQQJ6rHM4M+3rAjrhKlDbyjVHPvjtZ6IkmaNeWiei4mbkY9kjyGlYsYZAPqVNpOlXlTwrVI+ukf9Tv/AMqA7hr6btLx+YPkVnx5ccuItMe7KyrQyn6TYVn/AAibq28BOQDRP4TQ/wAF9SBJOkHmBHL3Psu2L2B0ucccvw/FWFSlptmsH9I93QSfdVNtTa3f6thvyPMHkuN6g75OvoUlE2NpcugNEciTj08k5d/G/wDERJncaZk7am7KBwm3JyZ6g9O+FqKAaADIJ5GfxXDjcjXOVFBSt6riGva4SI25/wCb9VmvFPCnsfMGPTz5L09gaXTqMkQGkNgz0kSm7zh7KjSxwxzz+ErTiwxXK7M2bI5x2s8x4bfCIfM9c/8Ay6/j5qdW1Q1wyHahI2JAJHkcfdWfFPBAb81KqPJ36hQLS0rMqFoLNgC50hhxtB3335dUjLh2uzlywTvhG74DVdVoUy76oyTPIkDzwFOLtO0k9gVmaPGqrLc0gQ2o0kmC1xDDklunESfSQmOF+I6gcBUc57DvIGodwfyKkc8Eq5vz8GiOo21GRrw9w3Bg9xjz6I6tmwiSFwVwAHBwhwBG3psmXXAmC4ztGQJ9Vp3RjxLk1rdLmJXcRe2mIAJz3Huo+t7qbnNEmmNR70wCXT3ECPNSbi+cCYG+BIld4dckVmtIE1JY4dQQZx7JWHJszKafF01Rpnjc8LTXPZV21dlUfkm9DqZlu3RVt3bOtq76ROWHB6tOWn1BCs7O61mDC7+p0trdE4OPJzTLOwuQ7zWu4Q2GrHUbeHBw3mIWpZbvcGgPLAN4jKy6dyV2rodN8FymLxstITzVE4jUhq2ZpKONt+Ba7MHxRmlxHVS+FsaGqPxMS6VI4VsV47QZbzuvzNknwTZVnwqqWMJqOGJM9uSrAJVzYWkt8+q9Lii3K0Km+CwtqhcJ5HY9ln/HNgXUhVbvTPzd2n9Fe8Oo1Gtio4OMmCBADZ+UegS4oG/BqattDp8oK6OJtUzNJcHmlA4Tyj2gwpC3mY6ot7aCoANj1UlJU+i12UNw57XFodgdv90la1aIk/IElj9uRuWeHgj1rmlEgiFmqzmuqEtcSPsD2TZpjoE4wQsuj0bwyt0Jk7HmtQ1KMo2FOPe1o1OwBuuhKSinJgpW6J1dv+HJ5Afgs7a05eSeToPJabDm45j9Fnrv5H55mfRcjWR3RdHV0jp0aq2vAwDSBHSc+6kfFB3wJ64wOSoLOsKhbpyds7dcc0r2/khhn5ZhokQZgzP7yvPyhPpnTUI2a2nVb9UN1DYnV91IHFTkEHzAAaPU5WQo1AQBOczk4M/orO1umNaS4Bx2azudyfLdRSyx64BlijXksa5c4zqePXHnBUJ7mtdkl/aDJ+65V4m0jQATyggRMTy/JS+Fsa8Eu+TT2P4EIoy3vaKljrkxV/Xe2oTndxDszJM577BBTugcgwebRsTO7Ry5Y9ui1vFbVlRuIAnJdGodI6Dt2VI3g75Jw4THL7FoTNvFMwZNE3zEu/BfHGkuovEwC9h8vqH5+60lzeUYDnA/KNzMjzCy/DeE06dRtXVDmFwIB1BxgtgbTvvj1V/XqU3M0FuvViBBMb74TIxTjXAzBjnFVJMi3l/qI0D5D0j3wU9w6p/isgTBBEiRHMgqisGmkYmQHEGXCYLtwBMfgtFaXDmVWsdpIdjAMiN/LkqxYnutv5R0JUotLwL/ANQbFpZTumzMim7u0glpPSDI9VlaD16RcWrbihVoDAc35TzDgZbIPcfZeWUqsYOCN16vTT3Qo8xnjtma/gNU1HgdN1uaQgLPeD+G6KQcfqfk+uwWn04WfZFSbQxN1yN0dUklwLTsIiPVV3FayjtpOZVc81XFsQ1mNIKh8QuZXm/VPUorG8UeGOxw5sqbnJVja0oZ5qLa0S8zyCtQJ5JHo+llteR/I2b+ALW2EwMTk/qtFY24Y2ASZ7yolpw8Fp1jcRHYqdaWzabGsaIa0AASTgdyvS4cW12InK+B5Zrxvf6KQpDeqc/5Bv74HutKV5x4ju/jXLiPpZ8g9Dk+8rdijcjPkfFEOi3CcXGogtQk5CiXTdZDQ/SQZxzCmOKVOAdWkF2081TCi0nZI+Oz+hJRZSQ7EXvZiQEbQuAIwEIwJqh+IKumj5uaPz/JTQoHiMTSAj+aZ7gY/ErPq3WJh4/xIvuGyKFPVvobOf7RH77qu4pbkmRkn7Dkh8OXYfatA3p6munrOoR2gj7qU1kjJhYstOJswtpjPC7aozEdxnBjyVZcufrdOS4n7la2hVLKYgAgbnBJnBJxsoNWi0knY+XJY44E42bHnaZV0Kbxv+5XG13A4J81ZfwrZBgGORmEdOm1zsgZ7faUMtMn8FrUMjUb49cjI6q6sLokOJOXA5URlg07AT+8Kzs6OJBmAZG++5CqGktlS1FIg1OJuNF7HNz/AJRjPVV1lXqAHSZMGBz9Pur1lkCXEDcHEEAdDlR32YxIiPIInovsUtUiJZ3L8B0jI8pypn/UXsIMGSeuCBgfvzTzLYO+d0aRsBvGB6pq/aGEFxDZIAyNycIf8JJWglqLdEe/LgZ3wCRvk+md5lWfB68kS4HoeYx3XbOmAciYCI0oMtwT0Qz0TkrsJan4N5wulnXvqiex5kKjuPBzXXr6zv8AtOh+gY+c/UD2kT/qT/h7imIK0V1WgA9V0cOWOPE23Xk5Wog9/ImhrRHRR690otxdAblVVW+DnFoIncicwey4mt9Xb/14eyo4/I/eXSiUbR1Q5w1PcMptqZ5gkFp3EHB8ire3Y0ktaQS3BAOx6Hos+i9KeWSzZ3f5BuaSpDFG0DRpaFYWtiBl3sn6FIN80+V6jHhjFUJcjoSQB3uqHxVxk0QKbPreJno3b3T4q3SAlKlYHinjYptNKmfndgkfyj9VjqLIXWgkycynQFrjFRVGdu3Yl1JJEUcXQEklCApKQy0eRIaYPZJVuj5LpmFARhcaEYCEaIBFd2vxKTmdR99wiaE6w4PdZ9RzGhmPuzMeEa+mrUpH+Zs+rD+hPstY5sjAHRYsh1K6+KGnSKmmcZ1GCB6HktjUbqaMAdD1XPTTikzVHhioF20wByXanVcp2rp0jzwiuGwIiPM/gritvCXATlfyAC0juuj5eqCkREEjn/tunA3uDy6olyRslW0k/v7KVSqNYT82OXc9JUD+I0bwOScN4x4EcvIk8uWytNLsHlliKxzmIA9emCm6lQchPcn3gBNUmAgT/wA+ak3NuIbDvT/hEpWVVAsqQ2I6+Sa+AHzraDkb5Hn+CIU8jp6x381KFUNAAbMkfjzHIIZUErQqdMDfmE/REGT+CafXJPqeg90XxS477csfZBKaSGRi2W1hTbqGncq94i90hjRMASe5/YUbgdnq+c7DAxGwV4ymJOFnlp3qMbi3SfgVmmk0vBRs4Y5/1SpVvwSm06g0ausZ91aOc1u5ATf8TP0tJ+wTMHp+nwdRV+fkRLI2R6fCmBxcAA50anczG0lNcN4ZRtnVXh5Lqztbi50nsAOilfDqO3dA6N/VD8OlSEuLR3cc/da1ijapdC2x5lyHfS0nvsjqOjLjA9h6lUV/4npsxTGo9eXoOazN5xOrVdLnGOQ5DyC0wxSfYDyJGp4j4mpskMGo9dh/usfeXL61Q1HmScdgBsAghEAtEYKPQptvs60LqQCZpXTXVvgNzUguicY5eakpqKthQg5ukPpKdxPh7qUHSQMSd8nuoKJO1ZJwcHTEiawnYE+WT7IU5bY+cDOWA5BHWEE20uOwUT6DqrGhrXEAciMpKpvuNNpvcxxMtwcE5jqksns4/C/6Nqg6Mm1HCEBGFrMwTQjYJkckITjMHsd0nN0MgzHccpfPGozk6SDiST+KjUburTDfqIH07wPJaXjdAOBkTG3buFm6lp0nziM+64+TiTRsguCfbcfqAHJk8zGEVLjdUmXNDu+oqE2wdjDj++6lttnxBp6gf7Gk9N25CXf6hMlP4sIxTg9zI9EwOL6dyRJmGz0RPsCB81GO+pwP5qw4daUARqtqj9v/ACc/RoTopvr7g7qIFLitJxEk+ZBhT/8ArFuwA/DNRwMgD5RI2JcRt5DmrDjRpVJJsHNcf/IXOaexMCHeqiWPD3ga2mm3u7RIjpqkqvb3OmH7jStFUfEl29x0MBBcSGtY4kA7NkHl5ZV9wwX9QS+mGD+4mf8A2purSqH6r1zezNY+zQAufwlPc3NUnuapn3WhRrsU5eC3ZRuAMubPku07a6cfrb7FUh4fQ3NV09S1ysLGzYBLbiI/uLT7bqOn/ZE2v6LOjwKu8zAPkT+i0/A+AfDcHvIEcpBJ8gFS8MFLnXc/1cVtLOkPhH4Ihwg5GesLNLHBu+eOasb7s1GvvRJ+Of5WwE4C4CXODR1JA+6w/HuNvNYinWeGANw1xA1RJ25qrq3Dn5cS49XEk/ddTHgbSZzZ5KdG7r8ataf8+s9GfN99vuq+48XwP8OlHd5/+o391k5KPRzjHX/daI4YoU5suqfiKq54NRzi1snSyGgmMA8yFVVK7nGSd+pJPuUAC6AjjBJ2gW2xAIwFxdCIgQXVwLoULBr1QxrnHZoJPoofhO9pms6v/DFryCPibgSMOBGM7KbUYHCCJBwQeYVpYXFGjS+E2kNGQesbg+5S8qcqSNGBxVtjHEbhxcW/Ec9gPyyeRz+cKMFxdTEIbtiT1BxGp8SKTXVDJxDRKYKK6pVDRNGmxpqXbSxri4D4dOTreQRtDSJQTkoqw8cHKVIorXw1c3LRX2+LLs4MEmFxaTW2kBTZDm0w1gdn5tIAJ+rqCkkLTN8tmh6tp0kjGQjAXAiC0CAmoatQDCNqj3uCO6RnX0jMXY0YMk8uR5ptop5+X8E4XQMJUx1XOdNmxWkPGoIEMAA/ZUQiT+SfqOKAAgdO6tRdFDtN5b9L3CP7ipFPiVYDFUk+h/EKDCl0KII6D97Ik2C4oCrc1qh+eo57f6ZIA/0jEKU0tcwbkjcdI2281wxgNB7/APKdptAG36INjuwt3FAttxp1RuufCGduUbJ+tXJAaMN+6bbuj20VZ00hEkDzwhqWo2ACsRSBgnz7eyVOlLu3XkgcQ4yItrRcDEgdV6FwG6qPAAEREk84G6x1tbEujA/DbqtNaVjRtq1UcmGP8zsD7kJEcf8AsSQzLNe22zH3xmtUOPrcMbYJH5JNCj0U+CvQ0cRsdaEbiO/eU0HIpVlByiCbBRtVEDASXJSBUIGEgVxcChdhhdQhdULs6kShJR29B9V2hjS5x5D9eShA7e1fUDi0Ehglx6D8z2C40VDruHjQKzRRpUv6KTf+4QRj5jGQP5ihvqopBtN4qhoBdU01I+JUkaKVNrSWl+Bk5AJOAMqrcPqO1vgE7NH0saMNY3sBz5mTzSOZz/JGhtY8f/J/Zf8AogEkgurQZTLAIgkkgHhtTd4yWz/Tn05rqSDIriwofiQ3ZW5edhpALjJPLfAQcTvBTdpiYA2wBPLukkuOu2zp1dIYbUB/Lv7px7ThJJFuYLig6TOynUaZ+kc/zXUkUWBJEwUZOnE/T9/JccAMEziOYjyXEk4Uct6Mk9AefcFDfO+G3Wfp37rqSH4Ya7Q7bmYwQDnf1/BPlonp+i6kqb4Lr6iy4bSDjAGE/wCKrjTTFs089T/MfS3vvPoEkkejW6dsVq3UaRlmYTrSuJLqHOHAUbSkkoQNoTttSL3tY3dxAE7ZMJJKn0WlbIXFONUbeoab6VV0EjUHsAMcw2DHunrC/o1/+04z/S5pB9xg/ZJJc6Gom5dnblosXt3XwSihKSS6JwzsoahMGDBjBiYPIxzSSVkIvDjW+G0Vi11SXAloAaRrdoI826Ty3Vndt/hg4VHupzR+K5zCSW03O0AANIl+pzYzAnPUcSSMraSRpx1ubIFs9j203Mp6GNbDGzLs5c9x5vdAJPYDkpbUkk2CqKETdyYSSSSMo//Z" class="w-full h-32 object-cover rounded-lg" alt="Recomendação 1">
+
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx10G9y9--X6SycmQEzKj4uwgxyPtf-DVzbw&s" class="w-full h-32 object-cover rounded-lg" alt="Recomendação 2">
+
+<img src="https://guiabrasileiroportugal.com/wp-content/uploads/2018/01/pratos-tipicos-de-portugal-3.jpg" class="w-full h-32 object-cover rounded-lg" alt="Recomendação 3">
+
+<img src="data:image/jpeg;base64,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" class="w-full h-32 object-cover rounded-lg" alt="Sujestão 4">
+</div>
+</div>
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestão de Cardápios</h3>
+<div class="space-y-3">
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Almoço Brabo para os Brabos</h4>
+<p class="text-sm text-gray-600">Almoço Brabo!</p>
+</div>
+
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Almoço Muito foda para os fodasticos</h4>
+<p class="text-sm text-gray-600">Almoço foda!</p>
+</div>
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Luxo Total</h4>
+<p class="text-sm text-gray-600">Pratos sofisticados com temperos especiais. Culinária da preferência do cliente</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-8 flex justify-end">
+
+</div>
+</div>
+
+<div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold">Cardápio - ${eventTitle}</h2>
+    <button class="text-gray-400 hover:text-gray-600" onclick="this.closest('.modal').remove()">
+      <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-close-line"></i>
+      </div>
+    </button>
+  </div>
+  
+  <div class="space-y-6">
+    <div>
+      <h3 class="text-lg font-semibold mb-3">Opções para Almoço</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 border rounded-lg">
+          <div class="flex justify-between items-start mb-2">
+            <span class="font-medium">Almoço Buffet Standard</span>
+            <span class="text-primary">R$ 134 por Pessoa</span>
+          </div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• Fixos</li>
+            <li>• Sucos</li>
+            <li>• Saladas</li>
+            <li>• Pratos Principais</li>
+            <li>• Acompanhamentos</li>
+            <li>• Sobremesas</li>
+          </ul>
+          <button onclick="addToCart('${eventTitle}', 'Coffee Break Básico', 44)" class="mt-3 w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Adicionar ao Carrinho</button>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <div class="flex justify-between items-start mb-2">
+            <span class="font-medium">Coffee Break Premium</span>
+            <span class="text-primary">R$ 116 por Pessoa</span>
+          </div>
+          <ul class="text-sm text-gray-600 space-y-1">
+            <li>• Bebidas</li>
+            <li>• Snacks</li>
+            <li>• Mini-Sanduíches</li>
+            <li>• Bolos</li>
+            <li>• Sobremesas</li>
+          </ul>
+          <button onclick="addToCart('${eventTitle}', 'Coffee Break Premium', 116)" class="mt-3 w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-opacity-90 transition-colors">Adicionar ao Carrinho</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+        } else if (eventTitle.includes("Casamento")) {
+          menuModal.innerHTML = `
+          <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-semibold text-gray-800">Casamentos</h2>
+<button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-gray-600">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div>
+<div class="space-y-4">
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-2">Data e Horário</h3>
+<p class="text-gray-600">Data • Horário - a combinar</p>
+</div>
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-2">Sujestões de Locais</h3>
+<p class="text-gray-600">Villa Verde</p>
+<p class="text-gray-600">Rua das Flores, 1000 - Jardins</p>
+<p class="text-gray-600">São Paulo - SP</p>
+</div>
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-2">Capacidade</h3>
+<p class="text-gray-600">Mínimo: 100 convidados</p>
+<p class="text-gray-600">Máximo: 1000 convidados</p>
+</div>
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-2">Estrutura</h3>
+<ul class="text-gray-600 space-y-1">
+<li>• Salão principal climatizado</li>
+<li>• Área externa para cerimônia</li>
+<li>• Jardim para fotos</li>
+<li>• Estacionamento com manobrista</li>
+<li>• Gerador próprio</li>
+<li>• Cozinha industrial completa</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="space-y-6">
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestões de Decorações</h3>
+
+<div class="grid grid-cols-2 gap-4">
+<img src="https://public.readdy.ai/ai/img_res/58d6c9f211a2f9a36298b7915c36b126.jpg" class="w-full h-32 object-cover rounded-lg" alt="Salão">
+
+<img src="https://public.readdy.ai/ai/img_res/56aa646c0324a2dd443e772ce1d10eb2.jpg" class="w-full h-32 object-cover rounded-lg" alt="Cerimônia">
+
+<img src="https://public.readdy.ai/ai/img_res/d93dc762630a4ccf479e27acba12dbd1.jpg" class="w-full h-32 object-cover rounded-lg" alt="Jardim">
+
+<img src="https://public.readdy.ai/ai/img_res/ceb322565e0922a226caa43e2526f4a1.jpg" class="w-full h-32 object-cover rounded-lg" alt="Decoração">
+</div>
+</div>
+
+<div>
+<h3 class="text-lg font-medium text-gray-800 mb-4">Sujestão de Decoração</h3>
+<div class="space-y-3">
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Clássico Romântico</h4>
+<p class="text-sm text-gray-600">Decoração em tons de branco e verde com flores naturais, velas e cristais</p>
+</div>
+
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Moderno Elegante</h4>
+<p class="text-sm text-gray-600">Design minimalista com arranjos modernos e iluminação especial</p>
+</div>
+<div class="p-4 border rounded-lg hover:border-primary transition-colors">
+<h4 class="font-medium text-gray-800 mb-2">Luxo Total</h4>
+<p class="text-sm text-gray-600">Decoração premium com flores importadas e móveis especiais</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-8 flex justify-end">
+<button onclick="showMenu(this)" class="bg-primary text-white px-8 py-3 rounded-button hover:bg-opacity-90 transition-colors font-medium whitespace-nowrap">
+Fale com um de Nossos Consultores
+</button>
+</div>
+</div>
+`;
+        }
+        document.body.appendChild(menuModal);
+        menuModal.addEventListener("click", (e) => {
+          if (e.target === menuModal) {
+            menuModal.remove();
+          }
+        });
+      }
+      function addToCart(eventTitle, menuType, pricePerPerson) {
+        const menuItems = {
+          "Coffee Break Básico": {
+            Fixos: [
+              { name: "Café", price: 0 },
+              { name: "Chás", price: 0 },
+              { name: "Água", price: 0 },
+            ],
+            Snacks: [{ name: "Petit Four Rojo", price: 0 }],
+          },
+          "Coffee Break Premium": {
+            Fixos: [
+              { name: "Água Sem Gás", price: 0 },
+              { name: "Café Coado", price: 0 },
+              { name: "Leite Integral", price: 0 },
+              { name: "Chás Variados", price: 0 },
+              { name: "Chocolate em Pó", price: 0 },
+              { name: "Frutas da Estação", price: 0 },
+              { name: "Iogurte", price: 0 },
+              { name: "Granola", price: 0 },
+            ],
+            Bebidas: [
+              {
+                name: "Água Aromatizada de Laranja com Manjericão e Miniflores",
+                price: 0,
+              },
+              {
+                name: "Água Aromatizada de Limão Siciliano, Hortelã e Manjericão Verde",
+                price: 0,
+              },
+              {
+                name: "Água Aromatizada de Alecrim, Limão Taiti e Manjericão Verde",
+                price: 0,
+              },
+              {
+                name: "Água Aromatizada de Limão com Manjericão Roxo",
+                price: 0,
+              },
+              { name: "Suco Uva com Canela", price: 0 },
+              { name: "Pink Lemonade", price: 0 },
+              { name: "Iced Tea Pêssego", price: 0 },
+              { name: "Iced Tea Limão", price: 0 },
+              { name: "Suco de Laranja", price: 0 },
+              { name: "Suco de Abacaxi", price: 0 },
+              { name: "Suco de Uva", price: 0 },
+              { name: "Suco de Limão", price: 0 },
+              { name: "Suco Laranja com Acerola", price: 0 },
+              {
+                name: "Suco Verde Detox (Maçã, Limão, Gengibre, Couve, Espinafre, Capim Santo)",
+                price: 0,
+              },
+              { name: "Suco Maracujá com Manjericão", price: 0 },
+              { name: "Suco Laranja com Morango", price: 0 },
+              { name: "Suco Abacaxi com Hortelã", price: 0 },
+            ],
+            Snacks: [
+              { name: "Esfiha de Queijo", price: 0 },
+              { name: "Esfiha de Ricota", price: 0 },
+              { name: "Esfiha de Carne", price: 0 },
+              { name: "Minifolhado de Calabresa Rojo", price: 0 },
+              { name: "Folhado Tomate Seco", price: 0 },
+              { name: "Pão Delícia de Azeitonas", price: 0 },
+              { name: "Minipão de Mandioquinha com Catupiry", price: 0 },
+              {
+                name: "Minienroladinho de Queijo com Linguiça Toscana",
+                price: 0,
+              },
+              { name: "Minicroissant Peito de Peru e Queijo", price: 0 },
+              { name: "Mini Coxinha Cremosa", price: 0 },
+              { name: "Miniquiche de Alho Poró Rojo", price: 0 },
+              { name: "Miniquiche Lorraine Rojo", price: 0 },
+              { name: "Miniquiche de Palmito Rojo", price: 0 },
+              { name: "Mini Pão de Queijo com Catupiry", price: 0 },
+              {
+                name: "Sanduíche Pastrami, Cebola Caramelizada e Cheddar Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Alho Poró Caramelizado com Nuts Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Queijo Emmental com Lombo Canadense e Cream Cheese com Limão Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Creme de Tomate Seco com Abobrinha Confitada Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Frango, Requeijão e Chia com Cenoura Laminada Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Queijos Cremosos com Tomate, Azeite, Orégano Mini",
+                price: 0,
+              },
+              {
+                name: "Sanduíche Salame Hamburguês com Queijo e Cream Cheese de Ervas",
+                price: 0,
+              },
+            ],
+            Bolos: [
+              {
+                name: "Bolo de Cenoura Gluten Free com Calda de Chocolate 80%",
+                price: 0,
+              },
+              {
+                name: "Bolo de Cenoura com Cobertura de Chocolate Trufado",
+                price: 0,
+              },
+              { name: "Bolo de Chocolate com Ganache", price: 0 },
+              { name: "Bolo de Fubá com Goiabada", price: 0 },
+              { name: "Bolo de Milho Cremoso", price: 0 },
+              { name: "Bolo de Prestígio", price: 0 },
+              { name: "Bolo de Fubá", price: 0 },
+              { name: "Bolo de Coco", price: 0 },
+              { name: "Cuca de Banana", price: 0 },
+              { name: "Muffin de Blueberry", price: 0 },
+              { name: "Pudim de Leite", price: 0 },
+              { name: "Pudim de Coco", price: 0 },
+              { name: "Pudim de Pistache", price: 0 },
+              { name: "Brownie de Chocolate", price: 0 },
+              {
+                name: "Verrine de Brownie com Ganache e Coulis de Frutas Vermelhas",
+                price: 0,
+              },
+              {
+                name: "Verrine Charge (Mousse de Chocolate, Caramelo Salgado e Amendoim)",
+                price: 0,
+              },
+            ],
+          },
+          "Almoço Buffet Standard": [
+            { name: "Salada Caesar", price: 12 },
+            { name: "Filé de Frango Grelhado", price: 25 },
+            { name: "Arroz Integral", price: 8 },
+            { name: "Feijão Tropeiro", price: 10 },
+            { name: "Sobremesa", price: 12 },
+            { name: "Bebidas não alcoólicas", price: 8 },
+          ],
+          "Almoço Premium": [
+            { name: "Salada Mediterrânea", price: 18 },
+            { name: "Filé Mignon ao Molho Madeira", price: 35 },
+            { name: "Risoto de Cogumelos", price: 20 },
+            { name: "Legumes Grelhados", price: 15 },
+            { name: "Sobremesa Gourmet", price: 16 },
+            { name: "Bebidas premium", price: 12 },
+            { name: "Café especial", price: 8 },
+          ],
+        };
+
+        const items = menuItems[menuType];
+        const quantityModal = document.createElement("div");
+        quantityModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        quantityModal.innerHTML = `
+    <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold">${eventTitle} - ${menuType}</h3>
+        <button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-gray-600">
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-close-line"></i>
+          </div>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 gap-6">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Número de pessoas</label>
+          <div class="flex items-center space-x-3">
+            <button onclick="adjustPersonCount(-10)" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary border rounded-full">
+              <i class="ri-subtract-line"></i>
+            </button>
+            <input type="number" min="10" value="10" class="w-24 text-center px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:border-primary" id="personCount" onchange="updateMenuTotal()">
+            <button onclick="adjustPersonCount(1)" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary border rounded-full">
+              <i class="ri-add-line"></i>
+            </button>
+            <span class="text-sm text-gray-500 ml-3">Mínimo: 10 pessoas</span>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex space-x-4 mb-4">
+            ${Object.keys(items)
+              .map(
+                (category) => `
+                  <button onclick="showCategoryItems('${category}')" class="flex-1 py-2 px-4 rounded-button border text-center category-tab" data-category="${category}">
+                    ${category}
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+          ${Object.keys(items)
+            .map(
+              (category) => `
+                <div id="${category}" class="category-items hidden">
+                  <h4 class="font-medium text-gray-900">${category}</h4>
+                  ${items[category]
+                    .map(
+                      (item, index) => `
+                        <div class="flex items-center justify-between p-4 border rounded-lg bg-white hover:border-primary transition-colors">
+                          <div class="flex-1">
+                            <span class="font-medium text-gray-900">${
+                              item.name
+                            }</span>
+                            <div class="text-sm text-gray-500">R$ ${item.price.toFixed(
+                              2
+                            )}/pessoa</div>
+                          </div>
+                          <div class="flex items-center space-x-3">
+                            <button onclick="decrementQuantity(${index})" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary border rounded-full transition-colors">
+                              <i class="ri-subtract-line"></i>
+                            </button>
+                            <input type="number" min="0" value="0" class="w-16 text-center px-2 py-1 border rounded-button focus:outline-none focus:border-primary item-quantity" data-index="${index}" data-category="${category}" onchange="updateMenuTotal()">
+                            <button onclick="incrementQuantity(${index})" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary border rounded-full transition-colors">
+                              <i class="ri-add-line"></i>
+                            </button>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join("")}
+                </div>
+              `
+            )
+            .join("")}
+        </div>
+        <div class="sticky bottom-0 bg-white border-t pt-4 mt-6">
+          <div class="flex justify-between items-center font-semibold text-lg mb-4">
+            <span>Total:</span>
+            <span id="menuTotal" class="text-primary">R$ 0,00</span>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button onclick="this.closest('.modal').remove()" class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium">Cancelar</button>
+            <button onclick="confirmAddToCart('${eventTitle}', '${menuType}', ${JSON.stringify(
+          items
+        ).replace(
+          /"/g,
+          "&quot;"
+        )})" class="bg-primary text-white px-6 py-2 rounded-button hover:bg-opacity-90 font-medium">Adicionar ao carrinho</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+        document.body.appendChild(quantityModal);
+        quantityModal.addEventListener("click", (e) => {
+          if (e.target === quantityModal) {
+            quantityModal.remove();
+          }
+        });
+
+        function updateMenuTotal() {
+          const personCount = parseInt(
+            document.getElementById("personCount").value
+          );
+          const items = document.querySelectorAll(".item-quantity");
+          let total = 0;
+
+          items.forEach((input) => {
+            const quantity = parseInt(input.value) || 0;
+            const price = parseFloat(input.dataset.price);
+            const category = input.dataset.category;
+            const index = input.dataset.index;
+
+            // Verifica se a quantidade é menor que 5 para aplicar o preço zero
+            const itemPrice = quantity < 5 ? 0 : price;
+
+            total += itemPrice * quantity * personCount;
+          });
+
+          const totalElement = document.getElementById("menuTotal");
+          totalElement.textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Add event listeners for quantity changes
+        document.querySelectorAll(".item-quantity").forEach((input) => {
+          input.addEventListener("change", updateMenuTotal);
+          input.addEventListener("input", updateMenuTotal);
+        });
+
+        // Show the first category by default
+        const firstCategory = Object.keys(items)[0];
+        showCategoryItems(firstCategory);
+        updateMenuTotal();
+      }
+
+      function showCategoryItems(category) {
+        // Hide all category items
+        document.querySelectorAll(".category-items").forEach((el) => {
+          el.classList.add("hidden");
+        });
+
+        // Show the selected category items
+        const selectedCategory = document.getElementById(category);
+        if (selectedCategory) {
+          selectedCategory.classList.remove("hidden");
+        }
+
+        // Highlight the selected tab
+        document.querySelectorAll(".category-tab").forEach((tab) => {
+          tab.classList.remove("bg-primary", "text-white");
+          if (tab.dataset.category === category) {
+            tab.classList.add("bg-primary", "text-white");
+          }
+        });
+      }
+
+      function confirmAddToCart(eventTitle, menuType, items) {
+        const quantity = parseInt(document.getElementById("personCount").value);
+        if (quantity < 10) {
+          const errorModal = document.createElement("div");
+          errorModal.className =
+            "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+          errorModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+<h3 class="text-lg font-semibold mb-4 text-red-600">Erro</h3>
+<p>A quantidade mínima é de 10 pessoas</p>
+<div class="flex justify-end mt-4">
+<button onclick="this.closest('.modal').remove()" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-opacity-90">OK</button>
+</div>
+</div>
+`;
+          document.body.appendChild(errorModal);
+          return;
+        }
+        const selectedItems = Array.from(
+          document.querySelectorAll(".item-quantity")
+        )
+          .map((input, index) => ({
+            ...items[index],
+            quantity: parseInt(input.value) || 0,
+          }))
+          .filter((item) => item.quantity > 0);
+        if (selectedItems.length === 0) {
+          const errorModal = document.createElement("div");
+          errorModal.className =
+            "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+          errorModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+<h3 class="text-lg font-semibold mb-4 text-red-600">Erro</h3>
+<p>Selecione pelo menos um item</p>
+<div class="flex justify-end mt-4">
+<button onclick="this.closest('.modal').remove()" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-opacity-90">OK</button>
+</div>
+</div>
+`;
+          document.body.appendChild(errorModal);
+          return;
+        }
+        const cartItems = document.getElementById("cartItems");
+        let eventSection = cartItems.querySelector(
+          `[data-event="${eventTitle}"]`
+        );
+        if (!eventSection) {
+          eventSection = document.createElement("div");
+          eventSection.className = "border rounded-lg p-4";
+          eventSection.setAttribute("data-event", eventTitle);
+          eventSection.innerHTML = `
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-semibold">${eventTitle}</h3>
+<button onclick="removeEventFromCart(this)" class="text-gray-400 hover:text-gray-600">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-delete-bin-line"></i>
+</div>
+</button>
+</div>
+<div class="space-y-2" data-items></div>
+`;
+          cartItems.appendChild(eventSection);
+        }
+        const itemsContainer = eventSection.querySelector("[data-items]");
+        const totalPrice = selectedItems.reduce(
+          (sum, item) => sum + item.price * item.quantity * quantity,
+          0
+        );
+        const itemElement = document.createElement("div");
+        itemElement.className =
+          "space-y-2 border-b pb-2 last:border-b-0 last:pb-0";
+        itemElement.innerHTML = `
+<div class="flex justify-between items-center">
+<span class="font-medium">${menuType} - ${quantity} pessoas</span>
+<button onclick="removeItemFromCart(this)" class="text-gray-400 hover:text-gray-600">
+<div class="w-4 h-4 flex items-center justify-center">
+<i class="ri-close-line"></i>
+</div>
+</button>
+</div>
+<div class="text-sm text-gray-600 space-y-1">
+${selectedItems
+  .map(
+    (item) => `
+<div class="flex justify-between">
+<span>${item.name}</span>
+<span>${item.quantity}x - R$ ${(item.price * item.quantity * quantity).toFixed(
+      2
+    )}</span>
+</div>
+`
+  )
+  .join("")}
+</div>
+<div class="flex justify-end font-medium">
+<span>Total: R$ ${totalPrice.toFixed(2)}</span>
+</div>
+`;
+        itemsContainer.appendChild(itemElement);
+        updateCartTotal();
+        document.querySelector(".modal:last-child").remove();
+        toggleModal("cartModal");
+      }
+      function removeItemFromCart(button) {
+        const item = button.closest(".flex");
+        const itemsContainer = item.closest("[data-items]");
+        item.remove();
+        if (itemsContainer.children.length === 0) {
+          itemsContainer.closest("[data-event]").remove();
+        }
+        updateCartTotal();
+      }
+      function removeEventFromCart(button) {
+        button.closest("[data-event]").remove();
+        updateCartTotal();
+      }
+      function updateCartTotal() {
+        let total = 0;
+        const cartItems = document.getElementById("cartItems");
+        const emptyCart = document.getElementById("emptyCart");
+        const cartFooter = document.getElementById("cartFooter");
+        const cartCount = document.getElementById("cartCount");
+        const items = document.querySelectorAll(
+          "#cartItems [data-items] .flex"
+        );
+        if (items.length === 0) {
+          cartItems.classList.add("hidden");
+          emptyCart.classList.remove("hidden");
+          cartFooter.classList.add("hidden");
+          cartCount.classList.add("hidden");
+        } else {
+          cartItems.classList.remove("hidden");
+          emptyCart.classList.add("hidden");
+          cartFooter.classList.remove("hidden");
+          cartCount.classList.remove("hidden");
+          items.forEach((item) => {
+            const price = parseFloat(
+              item
+                .querySelector("span:last-child")
+                .textContent.replace("R$ ", "")
+            );
+            total += price;
+          });
+          cartCount.textContent = items.length;
+        }
+        const totalElement = document.getElementById("cartTotalAmount");
+        totalElement.textContent = `R$ ${total.toFixed(2)}`;
+      }
+      function proceedToCheckout() {
+        const cartItems = document.getElementById("cartItems").innerHTML;
+        const cartTotal = document.querySelector(
+          "#cartModal .font-semibold span:last-child"
+        ).textContent;
+        document.getElementById("checkoutItems").innerHTML = cartItems;
+        document.getElementById("checkoutTotal").textContent = cartTotal;
+        toggleModal("cartModal");
+        toggleModal("checkoutModal");
+      }
+      function selectPaymentMethod(method) {
+        document.querySelectorAll(".payment-method").forEach((btn) => {
+          btn.classList.remove("border-primary");
+        });
+        event.currentTarget.classList.add("border-primary");
+        const paymentDetails = document.getElementById("paymentDetails");
+        paymentDetails.classList.remove("hidden");
+        switch (method) {
+          case "pix":
+            paymentDetails.innerHTML = `
+<div class="border rounded-lg p-4">
+<h4 class="font-medium mb-4">Pagamento via PIX</h4>
+<div class="bg-gray-50 p-4 rounded flex items-center justify-center">
+<div class="w-48 h-48 bg-gray-200 rounded flex items-center justify-center">
+<i class="ri-qr-code-line text-6xl text-gray-400"></i>
+</div>
+</div>
+<p class="text-sm text-gray-600 mt-4 text-center">Escaneie o QR Code para realizar o pagamento</p>
+</div>
+`;
+            break;
+          case "credit":
+            paymentDetails.innerHTML = `
+<div class="border rounded-lg p-4 space-y-4">
+<h4 class="font-medium mb-2">Dados do Cartão</h4>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Número do Cartão</label>
+<input type="text" class="w-full px-3 py-2 border rounded-button focus:outline-none focus:border-primary" placeholder="0000 0000 0000 0000">
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Validade</label>
+<input type="text" class="w-full px-3 py-2 border rounded-button focus:outline-none focus:border-primary" placeholder="MM/AA">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+<input type="text" class="w-full px-3 py-2 border rounded-button focus:outline-none focus:border-primary" placeholder="123">
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Nome no Cartão</label>
+<input type="text" class="w-full px-3 py-2 border rounded-button focus:outline-none focus:border-primary" placeholder="Como aparece no cartão">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Parcelas</label>
+<select class="w-full px-3 py-2 border rounded-button focus:outline-none focus:border-primary pr-8">
+<option>1x sem juros</option>
+<option>2x sem juros</option>
+<option>3x sem juros</option>
+<option>4x com juros</option>
+<option>5x com juros</option>
+<option>6x com juros</option>
+</select>
+</div>
+</div>
+`;
+            break;
+          case "boleto":
+            paymentDetails.innerHTML = `
+<div class="border rounded-lg p-4">
+<h4 class="font-medium mb-4">Pagamento via Boleto</h4>
+<p class="text-sm text-gray-600 mb-4">O boleto será gerado após a confirmação do pedido e terá vencimento em 3 dias úteis.</p>
+<div class="bg-gray-50 p-4 rounded">
+<div class="flex items-center space-x-3">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-information-line text-primary"></i>
+</div>
+<p class="text-sm text-gray-600">O pedido será confirmado após a compensação do pagamento.</p>
+</div>
+</div>
+</div>
+`;
+            break;
+          case "transfer":
+            paymentDetails.innerHTML = `
+<div class="border rounded-lg p-4">
+<h4 class="font-medium mb-4">Dados Bancários</h4>
+<div class="space-y-3">
+<div>
+<p class="text-sm font-medium text-gray-700">Banco</p>
+<p class="text-sm text-gray-600">Banco do Brasil</p>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-700">Agência</p>
+<p class="text-sm text-gray-600">1234-5</p>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-700">Conta</p>
+<p class="text-sm text-gray-600">12345-6</p>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-700">CNPJ</p>
+<p class="text-sm text-gray-600">12.345.678/0001-90</p>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-700">Beneficiário</p>
+<p class="text-sm text-gray-600">Cardápio Eventos LTDA</p>
+</div>
+</div>
+<div class="bg-gray-50 p-4 rounded mt-4">
+<div class="flex items-center space-x-3">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-information-line text-primary"></i>
+</div>
+<p class="text-sm text-gray-600">Envie o comprovante para confirmar o pagamento.</p>
+</div>
+</div>
+</div>
+`;
+            break;
+        }
+      }
+      function confirmPayment() {
+        const successModal = document.createElement("div");
+        successModal.className =
+          "modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        successModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+<div class="text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line text-4xl text-green-500"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Pedido Confirmado!</h3>
+<p class="text-gray-600 mb-6">Seu pedido foi realizado com sucesso. Em breve você receberá um email com mais informações.</p>
+<button onclick="finishOrder()" class="bg-primary text-white px-6 py-2 rounded-button hover:bg-opacity-90">
+Concluir
+</button>
+</div>
+</div>
+`;
+        document.body.appendChild(successModal);
+      }
+      function finishOrder() {
+        document.querySelectorAll(".modal").forEach((modal) => modal.remove());
+        document.getElementById("cartItems").innerHTML = "";
+        updateCartTotal();
+      }
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            const modalId = modal.id;
+            toggleModal(modalId);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
